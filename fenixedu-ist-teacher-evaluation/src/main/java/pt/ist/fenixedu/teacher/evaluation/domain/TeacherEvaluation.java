@@ -24,11 +24,12 @@ import java.util.Set;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.util.EmailAddressList;
 import org.fenixedu.academic.domain.util.email.Message;
-import org.fenixedu.academic.domain.util.email.Recipient;
 import org.fenixedu.academic.domain.util.email.SystemSender;
 import org.fenixedu.academic.predicate.AccessControl;
 import org.fenixedu.academic.util.Bundle;
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
+import org.fenixedu.bennu.core.groups.UserGroup;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.joda.time.DateTime;
 
@@ -91,8 +92,8 @@ public abstract class TeacherEvaluation extends TeacherEvaluation_Base {
         final Person evaluee = teacherEvaluationProcess.getEvaluee();
         if (evaluee != AccessControl.getPerson()) {
             final Person evaluator = teacherEvaluationProcess.getEvaluator();
-            final Recipient recipient = new Recipient(Collections.singletonList(evaluee));
-            final Recipient ccRecipient = new Recipient(Collections.singletonList(evaluator));
+            final PersistentGroup recipient = UserGroup.of(evaluee.getUser()).toPersistentGroup();
+            final PersistentGroup ccRecipient = UserGroup.of(evaluator.getUser()).toPersistentGroup();
             final FacultyEvaluationProcess facultyEvaluationProcess = teacherEvaluationProcess.getFacultyEvaluationProcess();
             final String title = facultyEvaluationProcess.getTitle().getContent();
             final String body = BundleUtil.getString(Bundle.APPLICATION, "message.email.stamp.teacher.evaluation.process", title);

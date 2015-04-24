@@ -26,9 +26,9 @@ import org.apache.commons.lang.StringUtils;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.exceptions.DomainException;
 import org.fenixedu.academic.domain.organizationalStructure.Unit;
-import org.fenixedu.academic.domain.util.email.Recipient;
 import org.fenixedu.academic.domain.util.email.UnitBasedSender;
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 
 import pt.ist.fenixedu.integration.domain.UnitFile;
 import pt.ist.fenixedu.integration.predicate.PersistentGroupMembersPredicates;
@@ -125,24 +125,21 @@ public class PersistentGroupMembers extends PersistentGroupMembers_Base {
         for (UnitBasedSender sender : getUnit().getUnitBasedSenderSet()) {
             for (PersistentGroupMembers group : getUnit().getPersistentGroupsSet()) {
                 if (!hasRecipientWithToName(sender, group.getName())) {
-                    sender.addRecipients(new Recipient(null, MembersLinkGroup.get(group)));
+                    sender.addRecipients(MembersLinkGroup.get(group).toPersistentGroup());
                 }
             }
-            for (Recipient recipient : sender.getRecipientsSet()) {
+            for (PersistentGroup recipient : sender.getRecipientsSet()) {
                 if (recipient.getMembers() instanceof MembersLinkGroup) {
-                    if (!hasRecipientWithToName(sender, recipient.getToName())) {
-                        if (recipient.getMessagesSet().isEmpty()) {
-                            recipient.delete();
-                        } else {
-                            sender.removeRecipients(recipient);
-                        }
+                    if (!hasRecipientWithToName(sender, recipient.getPresentationName())) {
+                        sender.removeRecipients(recipient);
                     }
                 }
             }
         }
     }
 
-    private boolean hasRecipientWithToName(UnitBasedSender sender, final String toName) {
-        return sender.getRecipientsSet().stream().filter(r -> r.getToName().equals(toName)).findAny().isPresent();
+    private boolean hasRecipientWithToName(UnitBasedSender sender, final String presentationName) {
+        return sender.getRecipientsSet().stream().filter(r -> r.getPresentationName().equals(presentationName)).findAny()
+                .isPresent();
     }
 }

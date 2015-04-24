@@ -30,10 +30,11 @@ import org.apache.struts.action.ActionMapping;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.Teacher;
 import org.fenixedu.academic.domain.util.email.PersonSender;
-import org.fenixedu.academic.domain.util.email.Recipient;
 import org.fenixedu.academic.domain.util.email.Sender;
 import org.fenixedu.academic.ui.struts.action.base.FenixDispatchAction;
 import org.fenixedu.academic.ui.struts.action.messaging.EmailsDA;
+import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
+import org.fenixedu.bennu.core.groups.DynamicGroup;
 import org.fenixedu.bennu.core.groups.UserGroup;
 import org.fenixedu.bennu.struts.annotations.Forward;
 import org.fenixedu.bennu.struts.annotations.Forwards;
@@ -57,16 +58,17 @@ public class SendEmailToTutoredStudents extends FenixDispatchAction {
         return getLoggedPerson(request).getTeacher();
     }
 
-    protected List<Recipient> getRecipients(HttpServletRequest request) {
+    protected List<PersistentGroup> getRecipients(HttpServletRequest request) {
 
         StudentsByTutorBean receivers = (StudentsByTutorBean) request.getAttribute("receivers");
 
-        List<Recipient> recipients = new ArrayList<Recipient>();
+        List<PersistentGroup> recipients = new ArrayList<PersistentGroup>();
 
         if (receivers != null) {
             for (TutorshipBean tutorshipBean : receivers.getStudentsList()) {
                 Person person = tutorshipBean.getTutorship().getStudent().getPerson();
-                recipients.add(Recipient.newInstance(person.getName(), UserGroup.of(person.getUser())));
+                recipients.add(DynamicGroup.get(person.getName()).mutator().changeGroup(UserGroup.of(person.getUser()))
+                        .toPersistentGroup());
             }
         }
 
@@ -132,6 +134,6 @@ public class SendEmailToTutoredStudents extends FenixDispatchAction {
             HttpServletResponse response) throws Exception {
         final Person teacherPerson = getLoggedPerson(request);
         Sender sender = PersonSender.newInstance(teacherPerson);
-        return EmailsDA.sendEmail(request, sender, getRecipients(request).toArray(new Recipient[] {}));
+        return EmailsDA.sendEmail(request, sender, getRecipients(request).toArray(new PersistentGroup[] {}));
     }
 }

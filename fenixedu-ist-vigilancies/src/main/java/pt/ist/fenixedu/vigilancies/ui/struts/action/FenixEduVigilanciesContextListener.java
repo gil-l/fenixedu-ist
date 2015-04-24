@@ -18,6 +18,7 @@
  */
 package pt.ist.fenixedu.vigilancies.ui.struts.action;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,7 +33,6 @@ import org.fenixedu.academic.domain.WrittenEvaluation;
 import org.fenixedu.academic.domain.organizationalStructure.Unit;
 import org.fenixedu.academic.domain.util.email.ConcreteReplyTo;
 import org.fenixedu.academic.domain.util.email.Message;
-import org.fenixedu.academic.domain.util.email.Recipient;
 import org.fenixedu.academic.domain.util.email.Sender;
 import org.fenixedu.academic.service.services.manager.MergeExecutionCourses;
 import org.fenixedu.academic.service.services.resourceAllocationManager.exams.EditWrittenEvaluation.EditWrittenEvaluationEvent;
@@ -98,8 +98,8 @@ public class FenixEduVigilanciesContextListener implements ServletContextListene
                     tos.add(person);
                 }
                 Sender sender = Bennu.getInstance().getSystemSender();
-                new Message(sender, new ConcreteReplyTo(group.getContactEmail()).asCollection(), new Recipient(
-                        UserGroup.of(Person.convertToUsers(tos))).asCollection(), subject, body, "");
+                new Message(sender, new ConcreteReplyTo(group.getContactEmail()).asCollection(),
+                        Collections.singletonList(UserGroup.of(Person.convertToUsers(tos))), subject, body, "");
 
             }
         }
@@ -135,8 +135,8 @@ public class FenixEduVigilanciesContextListener implements ServletContextListene
                     tos.add(person);
                 }
                 Sender sender = Bennu.getInstance().getSystemSender();
-                new Message(sender, new ConcreteReplyTo(group.getContactEmail()).asCollection(), new Recipient(
-                        UserGroup.of(Person.convertToUsers(tos))).asCollection(), subject, body, "");
+                new Message(sender, new ConcreteReplyTo(group.getContactEmail()).asCollection(),
+                        Collections.singletonList(UserGroup.of(Person.convertToUsers(tos))), subject, body, "");
             }
         }
     }

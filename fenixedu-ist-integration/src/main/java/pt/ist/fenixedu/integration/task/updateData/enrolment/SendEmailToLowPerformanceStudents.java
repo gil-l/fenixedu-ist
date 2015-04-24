@@ -27,14 +27,15 @@ import java.util.Set;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.student.Student;
 import org.fenixedu.academic.domain.util.email.Message;
-import org.fenixedu.academic.domain.util.email.Recipient;
 import org.fenixedu.academic.domain.util.email.Sender;
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.core.groups.UserGroup;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.io.domain.GenericFile;
 import org.fenixedu.bennu.scheduler.custom.CustomTask;
 
 import pt.ist.fenixframework.FenixFramework;
+import edu.emory.mathcs.backport.java.util.Collections;
 
 public class SendEmailToLowPerformanceStudents extends CustomTask {
 
@@ -70,13 +71,12 @@ public class SendEmailToLowPerformanceStudents extends CustomTask {
     private void createEmail(final Set<Person> students) {
 
         Sender sender = getConcelhoDeGestaoSender();
-        final Set<Recipient> tos = new HashSet<Recipient>();
-        tos.add(new Recipient(students));
 
         final Set<String> bccs = new HashSet<String>();
         bccs.add("marta.graca@ist.utl.pt");
 
-        new Message(sender, null, tos, getSubject(), getBody(), bccs);
+        new Message(sender, null, Collections.singletonList(UserGroup.of(Person.convertToUsers(students))), getSubject(),
+                getBody(), bccs);
         taskLog("Sent: " + students.size() + " emails");
     }
 

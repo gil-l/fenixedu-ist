@@ -35,9 +35,9 @@ import org.fenixedu.academic.domain.accessControl.StudentGroup;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.organizationalStructure.PedagogicalCouncilUnit;
 import org.fenixedu.academic.domain.util.email.EmailBean;
-import org.fenixedu.academic.domain.util.email.Recipient;
 import org.fenixedu.academic.ui.struts.action.base.FenixDispatchAction;
 import org.fenixedu.academic.util.Bundle;
+import org.fenixedu.bennu.core.groups.DynamicGroup;
 import org.fenixedu.bennu.struts.annotations.Forward;
 import org.fenixedu.bennu.struts.annotations.Forwards;
 import org.fenixedu.bennu.struts.annotations.Mapping;
@@ -114,9 +114,9 @@ public class SendEmailToStudents extends FenixDispatchAction {
                 MessageResources.getMessageResources(Bundle.PEDAGOGICAL).getMessage("label.mail.student.year.degree",
                         curricularYear.getYear().toString(), degree.getSigla());
 
-        Recipient recipient = Recipient.newInstance(message, studentsByDegreeAndCurricularYear);
         EmailBean bean = new EmailBean();
-        bean.setRecipients(Collections.singletonList(recipient));
+        bean.setRecipients(Collections.singletonList(DynamicGroup.get(message).mutator()
+                .changeGroup(studentsByDegreeAndCurricularYear).toPersistentGroup()));
         bean.setSender(PedagogicalCouncilUnit.getPedagogicalCouncilUnit().getUnitBasedSenderSet().iterator().next());
 
         request.setAttribute("emailBean", bean);

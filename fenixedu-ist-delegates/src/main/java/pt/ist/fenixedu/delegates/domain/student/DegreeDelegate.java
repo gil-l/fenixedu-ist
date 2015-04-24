@@ -27,7 +27,6 @@ import org.fenixedu.academic.domain.CurricularCourse;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.ExecutionCourse;
 import org.fenixedu.academic.domain.ExecutionYear;
-import org.fenixedu.academic.domain.util.email.Recipient;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.UserGroup;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
@@ -50,9 +49,9 @@ public class DegreeDelegate extends DegreeDelegate_Base {
     }
 
     private void setupRecipients() {
-        getSender().addRecipients(Recipient.getRecipientFromGroup(DelegateGroup.get()));
-        getSender().addRecipients(Recipient.getRecipientFromGroup(DelegateGroup.get(true)));
-        getSender().addRecipients(Recipient.getRecipientFromGroup(DelegateGroup.get(getDegree())));
+        getSender().addRecipients(DelegateGroup.get().toPersistentGroup());
+        getSender().addRecipients(DelegateGroup.get(true).toPersistentGroup());
+        getSender().addRecipients(DelegateGroup.get(getDegree()).toPersistentGroup());
     }
 
     @Override

@@ -24,13 +24,14 @@ import java.util.Set;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.student.Student;
 import org.fenixedu.academic.domain.util.email.Message;
-import org.fenixedu.academic.domain.util.email.Recipient;
 import org.fenixedu.academic.domain.util.email.Sender;
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.core.groups.UserGroup;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.scheduler.custom.CustomTask;
 
 import pt.ist.fenixframework.FenixFramework;
+import edu.emory.mathcs.backport.java.util.Collections;
 
 public class SendEmailToFlunkedStudents extends CustomTask {
 
@@ -55,11 +56,11 @@ public class SendEmailToFlunkedStudents extends CustomTask {
         Authenticate.mock(user);
 
         Set<Person> students = new HashSet<Person>();
-        for (int iter = 0; iter < FLUNKED_STUDENTS.length; iter++) {
+        for (String element : FLUNKED_STUDENTS) {
 
-            Student student = Student.readStudentByNumber(Integer.valueOf(FLUNKED_STUDENTS[iter]));
+            Student student = Student.readStudentByNumber(Integer.valueOf(element));
             if (student == null) {
-                taskLog("Can't find student -> " + FLUNKED_STUDENTS[iter]);
+                taskLog("Can't find student -> " + element);
                 continue;
             }
             students.add(student.getPerson());
@@ -73,13 +74,11 @@ public class SendEmailToFlunkedStudents extends CustomTask {
 
         final Sender sender = getConcelhoDeGestaoSender();
 
-        final Set<Recipient> tos = new HashSet<Recipient>();
-        tos.add(new Recipient(students));
-
         final Set<String> bccs = new HashSet<String>();
         bccs.add("marta.graca@tecnico.usliboa.pt");
 
-        new Message(sender, null, tos, getSubject(), getBody(), bccs);
+        new Message(sender, null, Collections.singletonList(UserGroup.of(Person.convertToUsers(students))), getSubject(),
+                getBody(), bccs);
         taskLog("Sent: " + students.size() + " emails");
     }
 
@@ -90,7 +89,7 @@ public class SendEmailToFlunkedStudents extends CustomTask {
     private String getBody() {
         final StringBuilder body = new StringBuilder();
 
-        //  Mail quando os alunos são retirados da lista de prescristos 
+        //  Mail quando os alunos são retirados da lista de prescristos
 //        body.append("Caro Aluno do IST,\n");
 //        body.append("\n");
 //        body.append("Após a reavaliação dos currículos académicos dos alunos prescritos em 16 de Agosto de 2013 (com base no lançamento de notas decorrido após esta data) e a apreciação dos recursos apresentados, verificou-se que o seu nome foi excluído da lista final de prescritos para 2013/2014.\n");

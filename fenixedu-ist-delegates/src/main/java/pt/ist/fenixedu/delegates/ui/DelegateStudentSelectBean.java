@@ -29,7 +29,7 @@ import org.fenixedu.academic.domain.ExecutionCourse;
 import org.fenixedu.academic.domain.ExecutionSemester;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.accessControl.StudentGroup;
-import org.fenixedu.academic.domain.util.email.Recipient;
+import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 
 import pt.ist.fenixedu.delegates.domain.student.CycleDelegate;
 import pt.ist.fenixedu.delegates.domain.student.DegreeDelegate;
@@ -111,8 +111,8 @@ public class DelegateStudentSelectBean {
         }
     }
 
-    public List<Recipient> getRecipients() {
-        List<Recipient> toRet = new ArrayList<Recipient>();
+    public List<PersistentGroup> getRecipients() {
+        List<PersistentGroup> toRet = new ArrayList<PersistentGroup>();
         if (selectedExecutionCourses != null && selectedExecutionCourses.size() > 0) {
 
             List<DelegateCurricularCourseBean> lccb =
@@ -128,7 +128,7 @@ public class DelegateStudentSelectBean {
                                             .filter(ec -> (ec.getDegreesSortedByDegreeName().contains(selectedPosition
                                                     .getDegree())))).collect(Collectors.toList());
 
-            selectedStudentCourses.stream().map(ec -> StudentGroup.get(ec)).forEach(sg -> toRet.add(Recipient.newInstance(sg)));
+            selectedStudentCourses.stream().map(ec -> StudentGroup.get(ec)).forEach(sg -> toRet.add(sg.toPersistentGroup()));
 
         }
         if (selectedYearStudents && selectedPosition instanceof YearDelegate) {
@@ -136,18 +136,18 @@ public class DelegateStudentSelectBean {
             StudentGroup sg =
                     StudentGroup.get(selectedPosition.getDegree(), yearDelegate.getCurricularYear(),
                             ExecutionYear.getExecutionYearByDate(yearDelegate.getStart().toYearMonthDay()));
-            toRet.add(Recipient.newInstance(sg));
+            toRet.add(sg.toPersistentGroup());
         }
         if (selectedDegreeOrCycleStudents) {
             if (selectedPosition instanceof CycleDelegate) {
                 CycleDelegate cycleDelegate = (CycleDelegate) selectedPosition;
                 StudentGroup sg = StudentGroup.get(selectedPosition.getDegree(), cycleDelegate.getCycle());
-                toRet.add(Recipient.newInstance(sg));
+                toRet.add(sg.toPersistentGroup());
             }
             if (selectedPosition instanceof DegreeDelegate) {
                 DegreeDelegate degreeDelegate = (DegreeDelegate) selectedPosition;
                 StudentGroup sg = StudentGroup.get(degreeDelegate.getDegree(), null);
-                toRet.add(Recipient.newInstance(sg));
+                toRet.add(sg.toPersistentGroup());
             }
         }
 

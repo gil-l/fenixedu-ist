@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.fenixedu.academic.domain.util.email.Recipient;
+import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.groups.Group;
 
 import pt.ist.fenixedu.delegates.domain.student.Delegate;
@@ -32,11 +32,11 @@ public class DelegateMessageBean {
     List<Group> selectedAdditionalGroups;
     List<Group> availableAdditionalGroups;
     Delegate selectedSender;
-    List<Recipient> recipients;
+    List<PersistentGroup> recipients;
 
     public DelegateMessageBean(Delegate delegate) {
         selectedSender = delegate;
-        recipients = new ArrayList<Recipient>();
+        recipients = new ArrayList<PersistentGroup>();
         selectedAdditionalGroups = new ArrayList<Group>();
         availableAdditionalGroups = new ArrayList<Group>();
     }
@@ -49,13 +49,13 @@ public class DelegateMessageBean {
     }
 
     public DelegateMessageBean(Set<Delegate> delegates) {
-        recipients = new ArrayList<Recipient>();
+        recipients = new ArrayList<PersistentGroup>();
         selectedAdditionalGroups = new ArrayList<Group>();
         availableAdditionalGroups = new ArrayList<Group>();
     }
 
     public DelegateMessageBean() {
-        recipients = new ArrayList<Recipient>();
+        recipients = new ArrayList<PersistentGroup>();
         selectedAdditionalGroups = new ArrayList<Group>();
         availableAdditionalGroups = new ArrayList<Group>();
     }
@@ -68,7 +68,7 @@ public class DelegateMessageBean {
         this.selectedSender = selectedSender;
     }
 
-    public List<Recipient> getRecipients() {
+    public List<PersistentGroup> getRecipients() {
         return recipients;
     }
 

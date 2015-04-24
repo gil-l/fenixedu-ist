@@ -26,9 +26,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.UriBuilder;
 
-import org.fenixedu.academic.domain.util.email.Recipient;
 import org.fenixedu.academic.domain.util.email.Sender;
 import org.fenixedu.academic.ui.struts.action.messaging.EmailsDA;
+import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +91,7 @@ public class DelegateMessagingController {
             BindingResult errors, HttpSession session, HttpServletRequest request) {
         DelegateMessageBean delegateMessageBean = new DelegateMessageBean(delegateStudentsBean);
         Sender sender = delegateMessageBean.getSelectedSender().getSender();
-        List<Recipient> recipients = delegateMessageBean.getRecipients();
+        List<PersistentGroup> recipients = delegateMessageBean.getRecipients();
         //EmailsDA.sendEmail(request, sender, recipients.toArray(new Recipient[] {}));
         String sendEmailUrl =
                 UriBuilder
@@ -109,8 +109,8 @@ public class DelegateMessagingController {
     public RedirectView sendMessage(@ModelAttribute DelegateMessageBean delegateMessageBean, Model model, BindingResult errors,
             HttpSession session, HttpServletRequest request) {
         Sender sender = delegateMessageBean.getSelectedSender().getSender();
-        List<Recipient> recipients = delegateMessageBean.getRecipients();
-        EmailsDA.sendEmail(request, sender, recipients.toArray(new Recipient[] {}));
+        List<PersistentGroup> recipients = delegateMessageBean.getRecipients();
+        EmailsDA.sendEmail(request, sender, recipients.toArray(new PersistentGroup[] {}));
         return new RedirectView(GenericChecksumRewriter.calculateChecksum("x", session));
     }
 
