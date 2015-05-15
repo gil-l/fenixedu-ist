@@ -24,11 +24,9 @@ import org.fenixedu.academic.domain.EvaluationManagementLog;
 import org.fenixedu.academic.domain.ExecutionCourse;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.WrittenEvaluation;
-import org.fenixedu.academic.domain.util.email.ConcreteReplyTo;
-import org.fenixedu.academic.domain.util.email.Message;
-import org.fenixedu.academic.domain.util.email.PersonSender;
 import org.fenixedu.academic.util.Bundle;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.messaging.domain.ReplyTo.ConcreteReplyTo;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixedu.vigilancies.domain.ExamCoordinator;
@@ -76,9 +74,9 @@ public class ChangeConvokeActive {
                 BundleUtil.getString("resources.VigilancyResources", "email.convoke.subject",
                         new String[] { writtenEvaluation.getName(), group.getName(), beginDateString, time });
 
-        new Message(PersonSender.newInstance(person), new ConcreteReplyTo(replyTo).asCollection(),
-                Collections.singletonList(VigilancyGroup.get(convoke)), Collections.EMPTY_LIST, Collections.EMPTY_LIST, subject,
-                emailMessage, convoke.getSitesAndGroupEmails());
+        new Message(person.getSender(), new ConcreteReplyTo(replyTo).asCollection(), Collections.singletonList(VigilancyGroup
+                .get(convoke)), Collections.EMPTY_LIST, Collections.EMPTY_LIST, subject, emailMessage,
+                convoke.getSitesAndGroupEmails());
 
     }
 

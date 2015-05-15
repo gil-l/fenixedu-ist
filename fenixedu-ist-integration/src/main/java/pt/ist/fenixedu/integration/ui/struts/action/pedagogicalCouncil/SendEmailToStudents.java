@@ -27,22 +27,19 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.apache.struts.util.MessageResources;
 import org.fenixedu.academic.domain.CurricularYear;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.accessControl.StudentGroup;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.organizationalStructure.PedagogicalCouncilUnit;
-import org.fenixedu.academic.domain.util.email.EmailBean;
 import org.fenixedu.academic.ui.struts.action.base.FenixDispatchAction;
-import org.fenixedu.academic.util.Bundle;
-import org.fenixedu.bennu.core.groups.DynamicGroup;
 import org.fenixedu.bennu.struts.annotations.Forward;
 import org.fenixedu.bennu.struts.annotations.Forwards;
 import org.fenixedu.bennu.struts.annotations.Mapping;
 import org.fenixedu.bennu.struts.portal.EntryPoint;
 import org.fenixedu.bennu.struts.portal.StrutsFunctionality;
+import org.fenixedu.messaging.ui.EmailBean;
 
 import pt.ist.fenixWebFramework.renderers.utils.RenderUtils;
 import pt.ist.fenixedu.integration.ui.struts.action.PedagogicalCommunicationApp;
@@ -110,14 +107,9 @@ public class SendEmailToStudents extends FenixDispatchAction {
 
         StudentGroup studentsByDegreeAndCurricularYear = StudentGroup.get(degree, curricularYear, executionYear);
 
-        String message =
-                MessageResources.getMessageResources(Bundle.PEDAGOGICAL).getMessage("label.mail.student.year.degree",
-                        curricularYear.getYear().toString(), degree.getSigla());
-
         EmailBean bean = new EmailBean();
-        bean.setRecipients(Collections.singletonList(DynamicGroup.get(message).mutator()
-                .changeGroup(studentsByDegreeAndCurricularYear).toPersistentGroup()));
-        bean.setSender(PedagogicalCouncilUnit.getPedagogicalCouncilUnit().getUnitBasedSenderSet().iterator().next());
+        bean.setRecipients(Collections.singletonList(studentsByDegreeAndCurricularYear));
+        bean.setSender(PedagogicalCouncilUnit.getPedagogicalCouncilUnit().getSender());
 
         request.setAttribute("emailBean", bean);
 

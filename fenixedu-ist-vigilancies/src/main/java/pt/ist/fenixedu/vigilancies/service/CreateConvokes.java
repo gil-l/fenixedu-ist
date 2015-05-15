@@ -25,11 +25,9 @@ import java.util.Set;
 
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.WrittenEvaluation;
-import org.fenixedu.academic.domain.util.email.ConcreteReplyTo;
-import org.fenixedu.academic.domain.util.email.Message;
-import org.fenixedu.academic.domain.util.email.PersonSender;
 import org.fenixedu.bennu.core.groups.UserGroup;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.messaging.domain.ReplyTo.ConcreteReplyTo;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixedu.vigilancies.domain.ExamCoordinator;
@@ -73,9 +71,9 @@ public class CreateConvokes {
                             new String[] { group.getEmailSubjectPrefix(), writtenEvaluation.getName(), group.getName(),
                                     beginDateString });
 
-            new Message(PersonSender.newInstance(person), new ConcreteReplyTo(replyTo).asCollection(),
-                    Collections.singletonList(UserGroup.of(Person.convertToUsers(recievers))), Collections.EMPTY_LIST,
-                    Collections.EMPTY_LIST, subject, emailMessage, bccs);
+            new Message(person.getSender(), new ConcreteReplyTo(replyTo).asCollection(), Collections.singletonList(UserGroup
+                    .of(Person.convertToUsers(recievers))), Collections.EMPTY_LIST, Collections.EMPTY_LIST, subject,
+                    emailMessage, bccs);
         }
     }
 }

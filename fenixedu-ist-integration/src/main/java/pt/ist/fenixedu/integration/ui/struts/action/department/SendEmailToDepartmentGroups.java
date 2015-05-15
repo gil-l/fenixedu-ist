@@ -34,8 +34,6 @@ import org.fenixedu.academic.domain.organizationalStructure.DepartmentUnit;
 import org.fenixedu.academic.domain.organizationalStructure.Party;
 import org.fenixedu.academic.domain.organizationalStructure.ScientificAreaUnit;
 import org.fenixedu.academic.domain.organizationalStructure.Unit;
-import org.fenixedu.academic.domain.util.email.PersonSender;
-import org.fenixedu.academic.domain.util.email.Sender;
 import org.fenixedu.academic.predicate.AccessControl;
 import org.fenixedu.academic.ui.struts.action.departmentMember.DepartmentMemberApp.DepartmentMemberMessagingApp;
 import org.fenixedu.academic.ui.struts.action.messaging.EmailsDA;
@@ -46,6 +44,7 @@ import org.fenixedu.bennu.struts.annotations.Forwards;
 import org.fenixedu.bennu.struts.annotations.Mapping;
 import org.fenixedu.bennu.struts.portal.EntryPoint;
 import org.fenixedu.bennu.struts.portal.StrutsFunctionality;
+import org.fenixedu.messaging.domain.Sender;
 
 import pt.ist.fenixedu.contracts.domain.Employee;
 import pt.ist.fenixedu.contracts.domain.accessControl.DepartmentPresidentStrategy;
@@ -116,13 +115,13 @@ public class SendEmailToDepartmentGroups extends UnitMailSenderAction {
             HttpServletResponse response) {
         final Unit unit = getUnit(request);
 
-        final Sender unitSender = getSomeSender(unit);
+        final Sender unitSender = unit.getOneUnitBasedSender();
 
         if (userOfficialSender(unit, unitSender)) {
             return EmailsDA.sendEmail(request, unitSender);
         } else {
             final Person person = AccessControl.getPerson();
-            final PersonSender sender = person.getSender();
+            final Sender sender = person.getSender();
 
             return unitSender == null ? EmailsDA.sendEmail(request, sender) : EmailsDA.sendEmail(request, sender, unitSender
                     .getRecipientsSet().toArray(new PersistentGroup[] {}));
@@ -136,13 +135,6 @@ public class SendEmailToDepartmentGroups extends UnitMailSenderAction {
             return DepartmentPresidentStrategy.isCurrentUserCurrentDepartmentPresident(department) && unitSender != null;
         }
         return false;
-    }
-
-    private Sender getSomeSender(final Unit unit) {
-        for (final Sender sender : unit.getUnitBasedSenderSet()) {
-            return sender;
-        }
-        return null;
     }
 
 }

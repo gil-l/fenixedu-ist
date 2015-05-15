@@ -29,12 +29,9 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.Teacher;
-import org.fenixedu.academic.domain.util.email.PersonSender;
-import org.fenixedu.academic.domain.util.email.Sender;
 import org.fenixedu.academic.ui.struts.action.base.FenixDispatchAction;
 import org.fenixedu.academic.ui.struts.action.messaging.EmailsDA;
-import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
-import org.fenixedu.bennu.core.groups.DynamicGroup;
+import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.groups.UserGroup;
 import org.fenixedu.bennu.struts.annotations.Forward;
 import org.fenixedu.bennu.struts.annotations.Forwards;
@@ -58,17 +55,18 @@ public class SendEmailToTutoredStudents extends FenixDispatchAction {
         return getLoggedPerson(request).getTeacher();
     }
 
-    protected List<PersistentGroup> getRecipients(HttpServletRequest request) {
+    protected List<Group> getRecipients(HttpServletRequest request) {
 
         StudentsByTutorBean receivers = (StudentsByTutorBean) request.getAttribute("receivers");
 
-        List<PersistentGroup> recipients = new ArrayList<PersistentGroup>();
+        List<Group> recipients = new ArrayList<Group>();
 
         if (receivers != null) {
             for (TutorshipBean tutorshipBean : receivers.getStudentsList()) {
                 Person person = tutorshipBean.getTutorship().getStudent().getPerson();
-                recipients.add(DynamicGroup.get(person.getName()).mutator().changeGroup(UserGroup.of(person.getUser()))
-                        .toPersistentGroup());
+                Group group = UserGroup.of(person.getUser());
+                group.setCustomName(person.getName()); //FIXME
+                recipients.add(group);
             }
         }
 
@@ -133,7 +131,6 @@ public class SendEmailToTutoredStudents extends FenixDispatchAction {
     public ActionForward createMail(ActionMapping mapping, ActionForm actionForm, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         final Person teacherPerson = getLoggedPerson(request);
-        Sender sender = PersonSender.newInstance(teacherPerson);
-        return EmailsDA.sendEmail(request, sender, getRecipients(request).toArray(new PersistentGroup[] {}));
+        return EmailsDA.sendEmail(request, teacherPerson.getSender(), getRecipients(request).toArray(new Group[] {}));
     }
 }
