@@ -461,7 +461,8 @@ public class TeacherEvaluationDA extends FenixDispatchAction {
                     if (teacherEvaluation != null) {
                         String department =
                                 teacherEvaluation.getTeacherEvaluationProcess().getEvaluee().getTeacher().getLastDepartment() == null ? withoutDepartment : teacherEvaluation
-                                        .getTeacherEvaluationProcess().getEvaluee().getTeacher().getLastDepartment().getName();
+                                        .getTeacherEvaluationProcess().getEvaluee().getTeacher().getLastDepartment().getName()
+                                        .getContent();
                         for (TeacherEvaluationFileType teacherEvaluationFileType : teacherEvaluation.getAutoEvaluationFileSet()) {
                             TeacherEvaluationFileBean teacherEvaluationFileBean =
                                     new TeacherEvaluationFileBean(teacherEvaluation, teacherEvaluationFileType);
@@ -508,7 +509,7 @@ public class TeacherEvaluationDA extends FenixDispatchAction {
                     if (teacherEvaluation != null) {
                         String department =
                                 teacherEvaluation.getTeacherEvaluationProcess().getEvaluee().getTeacher().getLastDepartment() == null ? withoutDepartment : teacherEvaluation
-                                        .getTeacherEvaluationProcess().getEvaluee().getTeacher().getLastDepartment().getName();
+                                        .getTeacherEvaluationProcess().getEvaluee().getTeacher().getLastDepartment().getName().getContent();
                         for (TeacherEvaluationFileType teacherEvaluationFileType : teacherEvaluation.getEvaluationFileSet()) {
                             TeacherEvaluationFileBean teacherEvaluationFileBean =
                                     new TeacherEvaluationFileBean(teacherEvaluation, teacherEvaluationFileType);
